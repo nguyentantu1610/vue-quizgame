@@ -80,13 +80,13 @@ onUnmounted(() => $reset());
         <div>
           <Button type="submit" label="Đăng nhập" fluid :loading="loading" />
         </div>
-        <!--  <div class="text-center">
+        <div class="text-center">
           <RouterLink :to="{ name: 'forgot-password' }">
             Quên mật khẩu?
           </RouterLink>
-        </div> -->
+        </div>
         <Divider><b>OR</b></Divider>
-        <!-- <div>
+        <div>
           <Button
             as="router-link"
             label="Đăng ký"
@@ -95,7 +95,7 @@ onUnmounted(() => $reset());
             severity="contrast"
             variant="outlined"
           />
-        </div> -->
+        </div>
       </form>
     </template>
   </Card>

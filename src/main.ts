@@ -15,6 +15,7 @@ import ConfirmationService from "primevue/confirmationservice";
 import ToastService from "primevue/toastservice";
 import "primeicons/primeicons.css";
 
+// Define theme preset for PrimeVue
 const Noir = definePreset(Aura, {
   semantic: {
     primary: {

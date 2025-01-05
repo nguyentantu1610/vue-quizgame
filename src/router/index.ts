@@ -33,6 +33,24 @@ const router = createRouter({
             leave: "animate__animated animate__fadeOutRight animate__faster",
           },
         },
+        {
+          path: "/register",
+          name: "register",
+          component: () => import("../components/auth/Register.vue"),
+          meta: {
+            enter: "animate__animated animate__fadeInRight",
+            leave: "animate__animated animate__fadeOutLeft animate__faster",
+          },
+        },
+        {
+          path: "/forgot-password",
+          name: "forgot-password",
+          component: () => import("../components/auth/ForgotPassword.vue"),
+          meta: {
+            enter: "animate__animated animate__fadeInRight",
+            leave: "animate__animated animate__fadeOutLeft animate__faster",
+          },
+        },
       ],
     },
     {
