@@ -1,3 +1,5 @@
+import { useAuthStore } from "@/stores/auth";
+import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -63,6 +65,37 @@ const router = createRouter({
   ],
   linkExactActiveClass:
     "border-l-2 border-zinc-950 dark:border-zinc-50 bg-slate-100 dark:bg-zinc-800",
+});
+
+// My Guardian
+router.beforeEach(async (to) => {
+  const { checkUser } = useAuthStore();
+  const { user } = storeToRefs(useAuthStore());
+
+  await checkUser();
+  // Redirect to home if this user has logined
+  if (
+    !to.meta.requiresAuth &&
+    user.value?.email &&
+    (to.name === "login" ||
+      to.name === "register" ||
+      to.name === "forgot-password")
+  ) {
+    return { name: "home" };
+  }
+  // Redirect to login if user hasn't logined
+  if (
+    (to.meta.requiresAuth || to.meta.requiresAdmin) &&
+    !user.value?.email &&
+    to.name !== "login"
+  ) {
+    return { name: "login" };
+  }
+  // Redirect to not found if this user is not admin
+  if (to.meta.requiresAdmin && !user.value?.is_admin) {
+    return { name: "NotFound" };
+  }
+  return true;
 });
 
 export default router;

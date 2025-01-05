@@ -64,7 +64,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   // Check user
   async function checkUser() {
-    useCustomHeaders(true);
+    useCustomHeaders(false);
     const { data, status } = await useGetFetch("/api/check-user", headers);
     status >= 200 && status <= 299
       ? (user.value = data.data)
@@ -85,7 +85,6 @@ export const useAuthStore = defineStore("auth", () => {
     }
     localStorage.getItem("token") ? localStorage.removeItem("token") : "";
     router.push({ name: "login" });
-    user.value = undefined;
   }
 
   return { user, authErrors, $reset, auth, checkUser, logout };

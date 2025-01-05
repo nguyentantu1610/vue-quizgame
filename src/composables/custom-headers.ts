@@ -12,13 +12,11 @@ function useCustomHeaders(requiresAuth: boolean) {
   // Reset headers
   headers = new Headers();
   headers.append("Accept", "application/json");
-  // If require auth then add Bearer token
-  if (requiresAuth) {
-    const token = localStorage.getItem("token");
-    token
-      ? headers.append("Authorization", `Bearer ${token}`)
-      : router.push({ name: "login" });
-  }
+  // Retrieve token in local storage and add to headers if present
+  const token = localStorage.getItem("token");
+  token ? headers.append("Authorization", `Bearer ${token}`) : "";
+  // If require auth but token not valid then return to login
+  requiresAuth && !token ? router.push({ name: "login" }) : "";
 }
 
 export { useCustomHeaders, headers };
