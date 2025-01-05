@@ -18,6 +18,24 @@ const router = createRouter({
       ],
     },
     {
+      // Auth's routes
+      path: "/auth",
+      component: () => import("../views/AuthView.vue"),
+      meta: { requiresAuth: false },
+      redirect: { name: "login" },
+      children: [
+        {
+          path: "/login",
+          name: "login",
+          component: () => import("../components/auth/Login.vue"),
+          meta: {
+            enter: "animate__animated animate__fadeInLeft",
+            leave: "animate__animated animate__fadeOutRight animate__faster",
+          },
+        },
+      ],
+    },
+    {
       // Not found route
       path: "/:pathMatch(.*)*",
       name: "NotFound",

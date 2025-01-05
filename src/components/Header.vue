@@ -79,7 +79,7 @@ function toggleDarkMode() {
             variant="outlined"
             severity="contrast"
             label="Đăng nhập"
-            :to="{ name: 'home' }"
+            :to="{ name: 'login' }"
             v-else
           />
           <TieredMenu
