@@ -56,6 +56,21 @@ const router = createRouter({
       ],
     },
     {
+      // Admin's route
+      path: "/admin",
+      name: "admin",
+      component: () => import("../views/AdminView.vue"),
+      meta: { requiresAdmin: true },
+      children: [
+        {
+          path: "users",
+          name: "users",
+          component: () =>
+            import("../components/admin/users/UserManagement.vue"),
+        },
+      ],
+    },
+    {
       // Not found route
       path: "/:pathMatch(.*)*",
       name: "NotFound",

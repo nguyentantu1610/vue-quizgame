@@ -39,7 +39,7 @@ function toggleDarkMode() {
     <Toolbar>
       <template #start>
         <a
-          :href="`http://quizgame.test/${user?.is_admin ? 'admin' : 'home'}`"
+          :href="`http://localhost:5173/${user?.is_admin ? 'admin' : 'home'}`"
           class="flex items-center justify-center"
         >
           <Avatar image="/menu-icon.png" class="mr-2" size="normal" />
