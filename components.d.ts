@@ -48,6 +48,7 @@ declare module 'vue' {
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
     Toolbar: typeof import('primevue/toolbar')['default']
     UserManagement: typeof import('./src/components/admin/users/UserManagement.vue')['default']
+    UserProfile: typeof import('./src/components/user/UserProfile.vue')['default']
   }
   export interface ComponentCustomProperties {
     FocusTrap: typeof import('primevue/focustrap')['default']

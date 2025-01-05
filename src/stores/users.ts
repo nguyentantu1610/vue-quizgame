@@ -82,7 +82,7 @@ export const useUsersStore = defineStore("users", () => {
     $reset();
     useCustomHeaders(true);
     const { data, status } = await usePostOrPatchFetch(
-      "PATCH",
+      "POST",
       uri,
       formData,
       headers

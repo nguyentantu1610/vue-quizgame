@@ -71,6 +71,20 @@ const router = createRouter({
       ],
     },
     {
+      // User's route
+      path: "/user",
+      component: () => import("../views/UserView.vue"),
+      meta: { requiresAuth: true },
+      redirect: { name: "profile" },
+      children: [
+        {
+          path: "profile",
+          name: "profile",
+          component: () => import("../components/user/UserProfile.vue"),
+        },
+      ],
+    },
+    {
       // Not found route
       path: "/:pathMatch(.*)*",
       name: "NotFound",
