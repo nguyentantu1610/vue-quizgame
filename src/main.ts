@@ -15,6 +15,9 @@ import ConfirmationService from "primevue/confirmationservice";
 import ToastService from "primevue/toastservice";
 import "primeicons/primeicons.css";
 
+import Echo from "laravel-echo";
+import Pusher from "pusher-js";
+
 // Define theme preset for PrimeVue
 const Noir = definePreset(Aura, {
   semantic: {
@@ -62,6 +65,26 @@ const Noir = definePreset(Aura, {
       },
     },
   },
+});
+
+(window as any).Pusher = Pusher;
+
+(window as any).Echo = new Echo({
+  broadcaster: "reverb",
+  key: import.meta.env.VITE_REVERB_APP_KEY,
+  wsHost: import.meta.env.VITE_REVERB_HOST,
+  wsPort: import.meta.env.VITE_REVERB_PORT,
+  wssPort: import.meta.env.VITE_REVERB_PORT,
+  forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? "https") === "https",
+  enabledTransports: ["ws", "wss"],
+  /* authEndpoint: '/broadcasting/auth'
+auth:
+    {
+        headers:
+            {
+                'Authorization': 'Bearer TOKEN'
+            }
+    } */
 });
 
 const app = createApp(App);

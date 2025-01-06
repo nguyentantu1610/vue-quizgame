@@ -86,12 +86,17 @@ onUnmounted(() => $reset());
           </RouterLink>
         </div>
         <Divider><b>OR</b></Divider>
-        <div>
+        <div class="flex flex-row justify-center gap-4">
+          <Button
+            as="a"
+            label="Google"
+            href="http://localhost:8000/api/auth/google/redirect"
+            icon="pi pi-google"
+          />
           <Button
             as="router-link"
             label="Đăng ký"
             :to="{ name: 'register' }"
-            fluid
             severity="contrast"
             variant="outlined"
           />
