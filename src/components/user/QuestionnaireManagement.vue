@@ -130,6 +130,10 @@ const destroyQuestionnaire = (data: Questionnaire, event: any) => {
     reject: () => console.log(`xoá ${data.name} thất bại~`),
   });
 };
+
+// Redirect to questionnaire detail
+const onRowSelect = (event: any) =>
+  router.push({ name: "questionnaire-detail", params: { id: event.data.id } });
 </script>
 
 <template>
@@ -217,6 +221,9 @@ const destroyQuestionnaire = (data: Questionnaire, event: any) => {
         resizableColumns
         columnResizeMode="expand"
         tableStyle="min-width: 50rem"
+        selectionMode="single"
+        :metaKeySelection="true"
+        @rowSelect="onRowSelect"
       >
         <template #header>
           <div class="flex items-center gap-2">

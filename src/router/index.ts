@@ -1,3 +1,5 @@
+import { useGetFetch } from "@/composables/custom-fetch";
+import { headers, useCustomHeaders } from "@/composables/custom-headers";
 import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
@@ -86,6 +88,15 @@ const router = createRouter({
           path: "questionnaire-detail/:id",
           name: "questionnaire-detail",
           component: () => import("../components/user/QuestionnaireDetail.vue"),
+          // Check the current user can see the specific questionnaire detail
+          beforeEnter: async (to) => {
+            useCustomHeaders(true);
+            const { status } = await useGetFetch(
+              `/api/user/questionnaires/${to.params.id}`,
+              headers
+            );
+            return status === 403 ? { name: "NotFound" } : true;
+          },
         },
       ],
     },
