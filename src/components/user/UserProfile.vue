@@ -2,10 +2,11 @@
 import { useUsersStore } from "@/stores/users";
 import { storeToRefs } from "pinia";
 import type User from "@/interfaces/user";
-import { onMounted, readonly, ref } from "vue";
+import { onMounted, ref } from "vue";
+import QuestionnaireManagement from "./QuestionnaireManagement.vue";
 
 const { getUsers, $reset, updateUser } = useUsersStore();
-const { userErrors } = storeToRefs(useUsersStore());
+const { userErrors, results } = storeToRefs(useUsersStore());
 // Init data
 const formData = ref<User>({
   id: "",
@@ -21,7 +22,6 @@ const loading = ref<boolean>(false);
 // Get user information from server
 onMounted(async () => {
   $reset();
-  const { results } = storeToRefs(useUsersStore());
   await getUsers("/api/user/show");
   results.value ? (formData.value = results.value) : "";
 });
@@ -100,6 +100,9 @@ async function handleSubmitForm() {
           </form>
         </template>
       </Card>
+    </div>
+    <div class="mt-8 basis-2/3 pl-6 pr-10">
+      <QuestionnaireManagement />
     </div>
   </div>
 </template>

@@ -82,6 +82,11 @@ const router = createRouter({
           name: "profile",
           component: () => import("../components/user/UserProfile.vue"),
         },
+        {
+          path: "questionnaire-detail/:id",
+          name: "questionnaire-detail",
+          component: () => import("../components/user/QuestionnaireDetail.vue"),
+        },
       ],
     },
     {

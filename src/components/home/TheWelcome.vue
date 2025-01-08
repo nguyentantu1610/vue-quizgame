@@ -3,7 +3,7 @@ import { useAuthStore } from "@/stores/auth";
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 
-onMounted(() => {
+/* onMounted(() => {
   const route = useRoute();
   const channel = route.query.channel
     ? `google-auth-${route.query.channel}`
@@ -20,7 +20,7 @@ onMounted(() => {
       }
     );
   }
-});
+}); */
 </script>
 
 <template>
