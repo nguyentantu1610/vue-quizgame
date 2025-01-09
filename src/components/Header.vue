@@ -22,6 +22,9 @@ const tieredMenuItems = ref([
     command: () => logout(),
   },
 ]);
+const showModal = ref<boolean>(false);
+const loading = ref<boolean>(false);
+const code = ref<string>("");
 
 // Show tiered menu
 const toggle = (event: Event) => {
@@ -32,6 +35,9 @@ const toggle = (event: Event) => {
 function toggleDarkMode() {
   document.documentElement.classList.toggle("dark");
 }
+
+// Join room
+async function handleSubmitForm() {}
 </script>
 
 <template>
@@ -53,7 +59,7 @@ function toggleDarkMode() {
         ></div>
       </template>
       <template #end>
-        <div class="flex items-center gap-6">
+        <div class="flex items-center gap-2">
           <ToggleSwitch v-model="isDarkMode" @click="toggleDarkMode">
             <template #handle="{ checked }">
               <i
@@ -64,6 +70,12 @@ function toggleDarkMode() {
               />
             </template>
           </ToggleSwitch>
+          <Button
+            label="Play Game"
+            icon="pi pi-sparkles"
+            icon-pos="left"
+            @click="showModal = true"
+          />
           <Button
             type="button"
             icon="pi pi-user"
@@ -91,5 +103,56 @@ function toggleDarkMode() {
         </div>
       </template>
     </Toolbar>
+    <Dialog
+      v-model:visible="showModal"
+      modal
+      header="Tham Gia Hoặc Tạo Phòng"
+      :style="{ width: '25rem' }"
+    >
+      <div v-if="!user?.email" class="text-center space-y-3">
+        <p>Vui lòng đăng nhập để tiếp tục!</p>
+        <Button as="router-link" label="Đăng nhập" :to="{ name: 'login' }" />
+      </div>
+      <form @submit.prevent="handleSubmitForm" class="flex flex-col" v-else>
+        <div class="w-3/4 self-center mt-1 mb-4 space-y-3">
+          <FloatLabel variant="on">
+            <InputMask
+              id="code"
+              fluid
+              autofocus
+              mask="999999"
+              v-model="code"
+              :disabled="loading"
+            />
+            <label for="code">Mã phòng</label>
+          </FloatLabel>
+          <!-- :invalid="!!questionnaireErrors?.name"
+          <Message
+            v-if="questionnaireErrors?.name"
+            size="small"
+            severity="error"
+            variant="simple"
+          >
+            {{ questionnaireErrors.name[0] }}
+          </Message> -->
+          <Button
+            type="submit"
+            label="Tham gia"
+            fluid
+            :loading="loading"
+          ></Button>
+          <Divider><b>OR</b></Divider>
+          <Button
+            as="router-link"
+            variant="outlined"
+            severity="contrast"
+            label="Tạo phòng"
+            fluid
+            :disabled="loading"
+            :to="{ name: 'profile' }"
+          ></Button>
+        </div>
+      </form>
+    </Dialog>
   </header>
 </template>

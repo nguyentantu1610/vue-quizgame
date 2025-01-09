@@ -325,5 +325,20 @@ const destroyQuiz = (event: any) => {
         </form>
       </template>
     </Card>
+    <Card class="basis-1/5">
+      <template #content>
+        <div class="text-center">
+          <Button
+            as="router-link"
+            label="Tạo phòng"
+            severity="info"
+            :to="{
+              name: 'waiting-room',
+              params: { id: questionnaireID },
+            }"
+          />
+        </div>
+      </template>
+    </Card>
   </div>
 </template>

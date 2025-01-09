@@ -53,9 +53,11 @@ declare module 'vue' {
     Toolbar: typeof import('primevue/toolbar')['default']
     UserManagement: typeof import('./src/components/admin/users/UserManagement.vue')['default']
     UserProfile: typeof import('./src/components/user/UserProfile.vue')['default']
+    WaitingRoom: typeof import('./src/components/user/game/WaitingRoom.vue')['default']
   }
   export interface ComponentCustomProperties {
     FocusTrap: typeof import('primevue/focustrap')['default']
     Ripple: typeof import('primevue/ripple')['default']
+    Tooltip: typeof import('primevue/tooltip')['default']
   }
 }

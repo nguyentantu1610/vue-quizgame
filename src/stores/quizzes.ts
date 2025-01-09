@@ -65,7 +65,6 @@ export const useQuizzesStore = defineStore("quizzes", () => {
       });
     }
     status === 422 ? (quizErrors.value = data.errors) : "";
-    console.log(data.errors);
     toast.add({
       severity: "error",
       summary: "Lỗi",

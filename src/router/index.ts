@@ -1,6 +1,7 @@
 import { useGetFetch } from "@/composables/custom-fetch";
 import { headers, useCustomHeaders } from "@/composables/custom-headers";
 import { useAuthStore } from "@/stores/auth";
+import { useGamesStore } from "@/stores/games";
 import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -96,6 +97,22 @@ const router = createRouter({
               headers
             );
             return status === 403 ? { name: "NotFound" } : true;
+          },
+        },
+        {
+          path: "waiting-room/:id?/:code?",
+          name: "waiting-room",
+          component: () => import("../components/user/game/WaitingRoom.vue"),
+          // Check the current user can create/join room
+          beforeEnter: async (to) => {
+            const room = localStorage.getItem("room");
+            const id = to.params.id;
+            const code = to.params.code;
+            if (id && !room) {
+              const { createRoom } = useGamesStore();
+              await createRoom(`/api/user/games/${id}?_method=PATCH`);
+            }
+            return id || code ? true : router.go(-1);
           },
         },
       ],

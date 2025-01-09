@@ -149,6 +149,15 @@ const onRowSelect = (event: any) =>
             @click="showDialog()"
           />
         </template>
+        <template #end>
+          <i
+            class="pi pi-question-circle"
+            style="font-size: 1.5rem; color: #708090"
+            v-tooltip.left="
+              '1. Nhấn \'Thêm mới\' để tạo game.\n 2. Thêm 1 vài quiz.\n 3. Nhấn \'Tạo phòng\' để chơi~.'
+            "
+          ></i>
+        </template>
       </Toolbar>
       <Dialog
         v-model:visible="showModal"

@@ -3,14 +3,13 @@ import { useAuthStore } from "@/stores/auth";
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 
-/* onMounted(() => {
+onMounted(() => {
   const route = useRoute();
   const channel = route.query.channel
     ? `google-auth-${route.query.channel}`
     : "";
   if (channel) {
     const { checkUser } = useAuthStore();
-    console.log(channel);
     (window as any).Echo.channel(channel).listen(
       "GoogleAuthProcessed",
       async (event: any) => {
@@ -20,7 +19,7 @@ import { useRoute } from "vue-router";
       }
     );
   }
-}); */
+});
 </script>
 
 <template>
