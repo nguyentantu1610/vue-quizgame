@@ -15,7 +15,7 @@ onMounted(() => {
       async (event: any) => {
         localStorage.setItem("token", event.token);
         await checkUser();
-        (window as any).Echo.leaveChannel(channel);
+        (window as any).Echo.leave(channel);
       }
     );
   }

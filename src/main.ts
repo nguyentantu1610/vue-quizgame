@@ -81,7 +81,7 @@ const Noir = definePreset(Aura, {
   authEndpoint: "/api/broadcasting/auth",
   auth: {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   },
 });

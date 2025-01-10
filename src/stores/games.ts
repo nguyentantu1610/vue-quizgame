@@ -36,26 +36,28 @@ export const useGamesStore = defineStore("games", () => {
   /**
    * This function perform create room
    *
-   * @param {string} uri The fetch uri
+   * @param {string} id The questionnaire id
    */
-  async function createRoom(uri: string) {
+  async function createRoom(id: string) {
     useCustomHeaders(true);
+    const formData = new FormData();
+    formData.append("questionnaire_id", id);
     const { data, status } = await usePostOrPatchFetch(
       "POST",
-      uri,
-      new FormData(),
+      "/api/user/games",
+      formData,
       headers
     );
     if (status >= 200 && status <= 299) {
       localStorage.setItem("room", `room.${data.data}`);
-      return toast.add({
+      toast.add({
         severity: "success",
         summary: "Thành công",
         detail: data.message,
         life: 3000,
       });
+      return router.push({ name: "waiting-room" });
     }
-    router.push({ name: "NotFound" });
     return toast.add({
       severity: "error",
       summary: "Lỗi",

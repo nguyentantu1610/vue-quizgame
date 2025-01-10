@@ -98,10 +98,7 @@ async function handleSubmitForm() {
     frmDT
   );
   loading.value = false;
-  if (
-    !questionnaireErrors.value?.name &&
-    !questionnaireErrors.value?.description
-  ) {
+  if (!questionnaireErrors.value) {
     showModal.value = false;
     formData.value = { id: "", name: "", description: "" };
     await getData();

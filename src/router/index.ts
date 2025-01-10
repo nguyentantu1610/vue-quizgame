@@ -100,20 +100,12 @@ const router = createRouter({
           },
         },
         {
-          path: "waiting-room/:id?/:code?",
+          path: "waiting-room",
           name: "waiting-room",
           component: () => import("../components/user/game/WaitingRoom.vue"),
-          // Check the current user can create/join room
-          beforeEnter: async (to) => {
-            const room = localStorage.getItem("room");
-            const id = to.params.id;
-            const code = to.params.code;
-            if (id && !room) {
-              const { createRoom } = useGamesStore();
-              await createRoom(`/api/user/games/${id}?_method=PATCH`);
-            }
-            return id || code ? true : router.go(-1);
-          },
+          // Check the current user can join waiting room
+          beforeEnter: () =>
+            localStorage.getItem("room") ? true : router.go(-1),
         },
       ],
     },

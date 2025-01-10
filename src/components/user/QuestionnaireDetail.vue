@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type Quiz from "@/interfaces/quiz";
+import { useGamesStore } from "@/stores/games";
 import { useQuizzesStore } from "@/stores/quizzes";
 import { storeToRefs } from "pinia";
 import { useConfirm } from "primevue";
@@ -8,10 +9,11 @@ import { useRoute } from "vue-router";
 
 const route = useRoute();
 const { getQuizzes, createOrUpdateQuiz, deleteQuiz } = useQuizzesStore();
+const { createRoom } = useGamesStore();
 const { results, quizErrors } = storeToRefs(useQuizzesStore());
 const confirm = useConfirm();
 // Init data
-const questionnaireID = route.params.id;
+const questionnaireID: string = route.params.id as string;
 const quizzes = ref<Array<Quiz> | null>(null);
 const loading = ref<boolean>(false);
 const formData = ref({
@@ -293,6 +295,7 @@ const destroyQuiz = (event: any) => {
                   id="time"
                   fluid
                   mask="99"
+                  max="15"
                   v-model="formData.time"
                   :invalid="!!quizErrors?.time"
                   :disabled="loading"
@@ -329,13 +332,9 @@ const destroyQuiz = (event: any) => {
       <template #content>
         <div class="text-center">
           <Button
-            as="router-link"
             label="Tạo phòng"
             severity="info"
-            :to="{
-              name: 'waiting-room',
-              params: { id: questionnaireID },
-            }"
+            @click="createRoom(questionnaireID)"
           />
         </div>
       </template>
