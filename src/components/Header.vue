@@ -2,11 +2,12 @@
 import router from "@/router";
 import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
+import { useToast } from "primevue";
 import { ref } from "vue";
-import { RouterLink } from "vue-router";
 
 const { user } = storeToRefs(useAuthStore());
 const { logout } = useAuthStore();
+const toast = useToast();
 // Init data
 const isDarkMode = ref<boolean>(false);
 const tieredMenu = ref();
@@ -37,7 +38,18 @@ function toggleDarkMode() {
 }
 
 // Join room
-async function handleSubmitForm() {}
+async function handleSubmitForm() {
+  if (!localStorage.getItem("room")) {
+    localStorage.setItem("room", `room.${code.value}`);
+    return router.push({ name: "room" });
+  }
+  toast.add({
+      severity: "info",
+      summary: "Thông báo",
+      detail: "Bạn chỉ có thể vào 1 phòng 1 lúc!",
+      life: 3000,
+    });
+}
 </script>
 
 <template>
@@ -126,15 +138,6 @@ async function handleSubmitForm() {}
             />
             <label for="code">Mã phòng</label>
           </FloatLabel>
-          <!-- :invalid="!!questionnaireErrors?.name"
-          <Message
-            v-if="questionnaireErrors?.name"
-            size="small"
-            severity="error"
-            variant="simple"
-          >
-            {{ questionnaireErrors.name[0] }}
-          </Message> -->
           <Button
             type="submit"
             label="Tham gia"

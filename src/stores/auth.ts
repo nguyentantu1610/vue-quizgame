@@ -84,6 +84,7 @@ export const useAuthStore = defineStore("auth", () => {
       });
     }
     localStorage.getItem("token") ? localStorage.removeItem("token") : "";
+    localStorage.getItem("room") ? localStorage.removeItem("room") : "";
     router.push({ name: "login" });
   }
 

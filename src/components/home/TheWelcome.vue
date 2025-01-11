@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import echo from "@/composables/my-echo";
 import { useAuthStore } from "@/stores/auth";
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
@@ -10,14 +11,11 @@ onMounted(() => {
     : "";
   if (channel) {
     const { checkUser } = useAuthStore();
-    (window as any).Echo.channel(channel).listen(
-      "GoogleAuthProcessed",
-      async (event: any) => {
-        localStorage.setItem("token", event.token);
-        await checkUser();
-        (window as any).Echo.leave(channel);
-      }
-    );
+    echo.channel(channel).listen("GoogleAuthProcessed", async (event: any) => {
+      localStorage.setItem("token", event.token);
+      await checkUser();
+      echo.leave(channel);
+    });
   }
 });
 </script>

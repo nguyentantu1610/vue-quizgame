@@ -100,12 +100,9 @@ const router = createRouter({
           },
         },
         {
-          path: "waiting-room",
-          name: "waiting-room",
-          component: () => import("../components/user/game/WaitingRoom.vue"),
-          // Check the current user can join waiting room
-          beforeEnter: () =>
-            localStorage.getItem("room") ? true : router.go(-1),
+          path: "room",
+          name: "room",
+          component: () => import("../components/user/game/Room.vue"),
         },
       ],
     },
@@ -125,6 +122,7 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const { checkUser } = useAuthStore();
   const { user } = storeToRefs(useAuthStore());
+  const room = localStorage.getItem("room");
 
   await checkUser();
   // Redirect to home if this user has logined
@@ -148,6 +146,10 @@ router.beforeEach(async (to) => {
   // Redirect to not found if this user is not admin
   if (to.meta.requiresAdmin && !user.value?.is_admin) {
     return { name: "NotFound" };
+  }
+  // Redirect to room if room code is present
+  if (user.value?.email && room && to.name !== "room") {
+    return { name: "room" };
   }
   return true;
 });

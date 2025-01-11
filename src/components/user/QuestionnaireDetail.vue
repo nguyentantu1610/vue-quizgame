@@ -103,6 +103,13 @@ const destroyQuiz = (event: any) => {
     reject: () => console.log(`xoá ${formData.value.id} thất bại~`),
   });
 };
+
+// Handle create room
+async function handleCreateRoom() {
+  loading.value = true;
+  await createRoom(questionnaireID);
+  loading.value = false;
+}
 </script>
 
 <template>
@@ -134,6 +141,7 @@ const destroyQuiz = (event: any) => {
                   label="Thêm mới"
                   fluid
                   @click="refreshFormData"
+                  :disabled="loading"
                 />
               </div>
             </div>
@@ -334,7 +342,9 @@ const destroyQuiz = (event: any) => {
           <Button
             label="Tạo phòng"
             severity="info"
-            @click="createRoom(questionnaireID)"
+            @click="handleCreateRoom"
+            :disabled="!quizzes?.length"
+            :loading="loading"
           />
         </div>
       </template>
