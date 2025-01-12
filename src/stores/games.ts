@@ -26,6 +26,14 @@ export const useGamesStore = defineStore("games", () => {
   const relation = ref<string>("");
   const { user } = storeToRefs(useAuthStore());
   const loading = ref<boolean>(false);
+  const roomStatus = ref<string>("");
+  const quiz = ref<{ question: string; answer: string }>({
+    question: "",
+    answer: "",
+  });
+  const leaderboard =
+    ref<Array<{ name: string | null; email: string; score: number }>>();
+  const score = ref<number>(0);
 
   /**
    * This function handle open room
@@ -81,12 +89,13 @@ export const useGamesStore = defineStore("games", () => {
    *
    * @param users The response from server
    */
-  function enterRoom(users: Array<Member>) {
+  async function enterRoom(users: Array<Member>) {
     isListening.value = true;
     players.value = users;
     relation.value = users.filter(
       (item) => item.id === user.value?.id
     )[0].relation;
+    await getData();
   }
 
   /**
@@ -146,7 +155,7 @@ export const useGamesStore = defineStore("games", () => {
         .listen("OpenRoom", (event: any) => openRoom(event))
         .listen("StopRoom", (event: any) => stopRoom(event, room))
         .listen("RemovePlayer", (event: any) => removePlayer(event, room))
-        .here((users: any) => enterRoom(users))
+        .here(async (users: any) => await enterRoom(users))
         .joining((user: any) => otherJoinRoom(user))
         .leaving((user: any) => otherLeaveRoom(user))
         .error((error: any) => errorRoom(error));
@@ -199,7 +208,7 @@ export const useGamesStore = defineStore("games", () => {
       `${uri}?code=${localStorage.getItem("room")?.split(".")[1]}`,
       headers
     );
-    if (status < 200 && status > 299) {
+    if (status < 200 || status > 299) {
       loading.value = false;
       toast.add({
         severity: "error",
@@ -207,6 +216,38 @@ export const useGamesStore = defineStore("games", () => {
         detail: data.message,
         life: 3000,
       });
+    }
+  }
+
+  /**
+   * This function perform get room data
+   */
+  async function getData() {
+    useCustomHeaders(true);
+    const { data, status } = await useGetFetch(
+      `/api/user/games/status?code=${
+        localStorage.getItem("room")?.split(".")[1]
+      }`,
+      headers
+    );
+    if (status < 200 || status > 299) {
+      return toast.add({
+        severity: "error",
+        summary: "Lỗi",
+        detail: data.message,
+        life: 3000,
+      });
+    }
+    roomStatus.value = data.data.status;
+    score.value = data.data.score;
+    if (roomStatus.value === "playing") {
+      quiz.value.question = data.data.question;
+      quiz.value.answer = data.data.answer;
+      localStorage.setItem("time", data.data.time);
+    }
+    if (roomStatus.value === "finished") {
+      leaderboard.value = data.data.leaderboard;
+      localStorage.setItem("time", data.data.time);
     }
   }
 
@@ -218,5 +259,9 @@ export const useGamesStore = defineStore("games", () => {
     relation,
     destroy,
     loading,
+    roomStatus,
+    quiz,
+    leaderboard,
+    score,
   };
 });

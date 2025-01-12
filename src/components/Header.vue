@@ -38,17 +38,17 @@ function toggleDarkMode() {
 }
 
 // Join room
-async function handleSubmitForm() {
-  if (!localStorage.getItem("room")) {
-    localStorage.setItem("room", `room.${code.value}`);
-    return router.push({ name: "room" });
-  }
-  toast.add({
+function handleSubmitForm() {
+  if (localStorage.getItem("room")) {
+    return toast.add({
       severity: "info",
       summary: "Thông báo",
       detail: "Bạn chỉ có thể vào 1 phòng 1 lúc!",
       life: 3000,
     });
+  }
+  localStorage.setItem("room", `room.${code.value}`);
+  router.push({ name: "room" });
 }
 </script>
 
