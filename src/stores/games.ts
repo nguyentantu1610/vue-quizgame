@@ -4,13 +4,13 @@ import {
   usePostOrPatchFetch,
 } from "@/composables/custom-fetch";
 import { headers, useCustomHeaders } from "@/composables/custom-headers";
-import echo from "@/composables/my-echo";
 import type Quiz from "@/interfaces/quiz";
 import router from "@/router";
 import { defineStore, storeToRefs } from "pinia";
 import { useToast } from "primevue";
 import { ref } from "vue";
 import { useAuthStore } from "./auth";
+import { getEchoInstance } from "@/composables/my-echo";
 
 interface Member {
   id: string;
@@ -25,6 +25,7 @@ export const useGamesStore = defineStore("games", () => {
   const players = ref<Array<Member>>();
   const relation = ref<string>("");
   const { user } = storeToRefs(useAuthStore());
+  const loading = ref<boolean>(false);
 
   /**
    * This function handle open room
@@ -46,7 +47,8 @@ export const useGamesStore = defineStore("games", () => {
    * @param room The room name (channel)
    */
   function stopRoom(event: any, room: string) {
-    echo.leave(room);
+    loading.value = false;
+    getEchoInstance().leave(room);
     isListening.value = false;
     localStorage.removeItem("room");
     router.push({ name: "home" });
@@ -65,8 +67,9 @@ export const useGamesStore = defineStore("games", () => {
    * @param room The room name (channel)
    */
   const removePlayer = (event: any, room: string) => {
+    loading.value = false;
     if (event.data === user.value?.id) {
-      echo.leave(room);
+      getEchoInstance().leave(room);
       isListening.value = false;
       localStorage.removeItem("room");
       router.push({ name: "home" });
@@ -138,7 +141,7 @@ export const useGamesStore = defineStore("games", () => {
   function joinRoom() {
     const room = localStorage.getItem("room");
     if (room) {
-      const channel = echo
+      const channel = getEchoInstance()
         .join(room)
         .listen("OpenRoom", (event: any) => openRoom(event))
         .listen("StopRoom", (event: any) => stopRoom(event, room))
@@ -190,12 +193,14 @@ export const useGamesStore = defineStore("games", () => {
    * @param {string} uri The fetch uri
    */
   async function destroy(uri: string) {
+    loading.value = true;
     useCustomHeaders(true);
     const { data, status } = await useDeleteFetch(
       `${uri}?code=${localStorage.getItem("room")?.split(".")[1]}`,
       headers
     );
     if (status < 200 && status > 299) {
+      loading.value = false;
       toast.add({
         severity: "error",
         summary: "Lỗi",
@@ -212,5 +217,6 @@ export const useGamesStore = defineStore("games", () => {
     isListening,
     relation,
     destroy,
+    loading,
   };
 });

@@ -6,10 +6,13 @@ import { onMounted } from "vue";
 
 const toast = useToast();
 const { joinRoom, destroy } = useGamesStore();
-const { players, isListening, relation } = storeToRefs(useGamesStore());
+const { players, isListening, relation, loading } = storeToRefs(
+  useGamesStore()
+);
 // Init data
 const room = localStorage.getItem("room");
 
+// Join room
 onMounted(() => {
   joinRoom();
 });
@@ -26,6 +29,7 @@ onMounted(() => {
               label="Thoát"
               severity="secondary"
               v-if="relation !== 'creator'"
+              :loading="loading"
               @click="destroy('/api/user/games/leave')"
             />
           </template>
@@ -36,6 +40,7 @@ onMounted(() => {
               label="Huỷ Phòng"
               severity="danger"
               v-if="relation === 'creator'"
+              :loading="loading"
               @click="destroy('/api/user/games')"
             />
           </template>
@@ -51,9 +56,7 @@ onMounted(() => {
               :pt="{
                 removeIcon: {
                   onclick: async () =>
-                    await destroy(
-                      `/api/user/games/remove-player/${item.id}`
-                    ),
+                    await destroy(`/api/user/games/remove-player/${item.id}`),
                 },
               }"
             />
