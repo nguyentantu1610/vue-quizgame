@@ -104,6 +104,7 @@ export const useGamesStore = defineStore("games", () => {
       detail: event.message,
       life: 3000,
     });
+    startCountdown();
   }
 
   /**
@@ -114,7 +115,7 @@ export const useGamesStore = defineStore("games", () => {
   function handleResponseLeaderboard(event: any) {
     leaderboard.value = event.data;
     roomStatus.value = "finished";
-    if (relation.value === 'player') {
+    if (relation.value === "player") {
       score.value = event.data.filter(
         (item: any) => item.id === user.value?.id
       )[0].score;
@@ -210,7 +211,7 @@ export const useGamesStore = defineStore("games", () => {
         .leaving((user: any) => otherLeaveRoom(user))
         .error((error: any) => errorRoom(error));
     }
-    router.push({name: "home"});
+    router.push({ name: "home" });
   }
 
   /**
@@ -295,6 +296,7 @@ export const useGamesStore = defineStore("games", () => {
       quiz.value.answer = data.data.answer;
       answered.value = data.data.answered;
       handleTime(data.data.time + " UTC");
+      startCountdown();
     }
     if (roomStatus.value === "finished") {
       leaderboard.value = data.data.leaderboard;
@@ -364,6 +366,16 @@ export const useGamesStore = defineStore("games", () => {
     channel.whisper("answered", {
       answered: answered.value,
     });
+  }
+
+  // count down
+  function startCountdown() {
+    let countDown = setInterval(() => {
+      time.value--;
+      if (time.value === 0) {
+        clearInterval(countDown);
+      }
+    }, 1000);
   }
 
   return {

@@ -46,13 +46,6 @@ function getColor(index: number) {
   }
   return color;
 }
-
-let countDown = setInterval(() => {
-  time.value--;
-  if (time.value === 0) {
-    clearInterval(countDown);
-  }
-}, 1000);
 </script>
 
 <template>
