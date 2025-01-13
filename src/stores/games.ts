@@ -4,7 +4,6 @@ import {
   usePostOrPatchFetch,
 } from "@/composables/custom-fetch";
 import { headers, useCustomHeaders } from "@/composables/custom-headers";
-import type Quiz from "@/interfaces/quiz";
 import router from "@/router";
 import { defineStore, storeToRefs } from "pinia";
 import { useToast } from "primevue";
@@ -87,6 +86,26 @@ export const useGamesStore = defineStore("games", () => {
   };
 
   /**
+   * This function handle quiz response from server
+   *
+   * @param event The response from server
+   */
+  function handleResponseQuiz(event: any) {
+    loading.value = false;
+    quiz.value.question = event.data.question;
+    quiz.value.answer = event.data.answer;
+    answered.value = event.data.answered;
+    roomStatus.value = "playing";
+    handleTime(event.data.time);
+    toast.add({
+      severity: "success",
+      summary: "Thành công",
+      detail: event.message,
+      life: 3000,
+    });
+  }
+
+  /**
    * This function handle enter room
    *
    * @param users The response from server
@@ -157,6 +176,7 @@ export const useGamesStore = defineStore("games", () => {
         .listen("OpenRoom", (event: any) => openRoom(event))
         .listen("StopRoom", (event: any) => stopRoom(event, room))
         .listen("RemovePlayer", (event: any) => removePlayer(event, room))
+        .listen("SendQuiz", (event: any) => handleResponseQuiz(event))
         .here(async (users: any) => await enterRoom(users))
         .joining((user: any) => otherJoinRoom(user))
         .leaving((user: any) => otherLeaveRoom(user))
@@ -245,17 +265,48 @@ export const useGamesStore = defineStore("games", () => {
     if (roomStatus.value === "playing") {
       quiz.value.question = data.data.question;
       quiz.value.answer = data.data.answer;
-      let finishTime = new Date(data.data.time);
-      let now = new Date();
-      time.value = Math.floor((finishTime.getTime() - now.getTime()) / 1000);
       answered.value = data.data.answered;
+      handleTime(data.data.time + ' UTC');
     }
     if (roomStatus.value === "finished") {
       leaderboard.value = data.data.leaderboard;
-      let finishTime = new Date(data.data.time);
-      let now = new Date();
-      time.value = Math.floor((finishTime.getTime() - now.getTime()) / 1000);
+      handleTime(data.data.time + ' UTC');
     }
+  }
+
+  /**
+   * This function perform start game
+   */
+  async function startGame() {
+    loading.value = true;
+    useCustomHeaders(true);
+    const { data, status } = await useGetFetch(
+      `/api/user/games/start?code=${
+        localStorage.getItem("room")?.split(".")[1]
+      }`,
+      headers
+    );
+    if (status < 200 || status > 299) {
+      loading.value = false;
+      return toast.add({
+        severity: "error",
+        summary: "Lỗi",
+        detail: data.message,
+        life: 3000,
+      });
+    }
+  }
+
+  // This function handle time
+  function handleTime(date: string) {
+    let finishTime = new Date(date).getTime();
+    console.log(date);
+    console.log(finishTime);
+    console.log(new Date(finishTime));
+    let now = new Date().getTime();
+    console.log(now);
+    console.log(new Date(now));
+    time.value = Math.floor((finishTime - now) / 1000);
   }
 
   return {
@@ -272,5 +323,6 @@ export const useGamesStore = defineStore("games", () => {
     score,
     time,
     answered,
+    startGame,
   };
 });

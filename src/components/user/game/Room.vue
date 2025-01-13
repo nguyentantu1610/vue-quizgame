@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { useGamesStore } from "@/stores/games";
 import { storeToRefs } from "pinia";
-import { useToast } from "primevue";
 import { onMounted } from "vue";
 
-const toast = useToast();
-const { joinRoom, destroy } = useGamesStore();
+const { joinRoom, destroy, startGame } = useGamesStore();
 const {
   players,
   isListening,
@@ -90,10 +88,11 @@ let countDown = setInterval(() => {
           <div class="w-full text-center mt-10 mb-6">
             <Button
               raised
-              variant="text"
-              severity="secondary"
+              severity="contrast"
               label="Bắt Đầu"
               :loading="loading"
+              v-if="relation === 'creator'"
+              @click="startGame"
             />
           </div>
           <div class="flex flex-row flex-wrap gap-2">
@@ -158,6 +157,9 @@ let countDown = setInterval(() => {
               <span>{{ item.score }}</span>
             </li>
           </ul>
+          <p class="text-lg mt-6 text-center" v-if="relation !== 'creator'">
+            Điểm của tôi: <span class="text-lg font-bold ml-2">{{ score }}</span>
+          </p>
         </div>
       </template>
     </Card>
