@@ -107,6 +107,27 @@ export const useGamesStore = defineStore("games", () => {
   }
 
   /**
+   * This function handle leaderboard response from server
+   *
+   * @param event The response from server
+   */
+  function handleResponseLeaderboard(event: any) {
+    leaderboard.value = event.data;
+    roomStatus.value = "finished";
+    if (relation.value === 'player') {
+      score.value = event.data.filter(
+        (item: any) => item.id === user.value?.id
+      )[0].score;
+    }
+    toast.add({
+      severity: "success",
+      summary: "Thành công",
+      detail: event.message,
+      life: 3000,
+    });
+  }
+
+  /**
    * This function handle enter room
    *
    * @param users The response from server
@@ -178,6 +199,9 @@ export const useGamesStore = defineStore("games", () => {
         .listen("StopRoom", (event: any) => stopRoom(event, room))
         .listen("RemovePlayer", (event: any) => removePlayer(event, room))
         .listen("SendQuiz", (event: any) => handleResponseQuiz(event))
+        .listen("SendLeaderboard", (event: any) =>
+          handleResponseLeaderboard(event)
+        )
         .listenForWhisper("answered", (event: any) => {
           answered.value = event.answered;
         })
@@ -186,7 +210,7 @@ export const useGamesStore = defineStore("games", () => {
         .leaving((user: any) => otherLeaveRoom(user))
         .error((error: any) => errorRoom(error));
     }
-    router.back();
+    router.push({name: "home"});
   }
 
   /**
@@ -304,13 +328,8 @@ export const useGamesStore = defineStore("games", () => {
   // This function handle time
   function handleTime(date: string) {
     let finishTime = new Date(date).getTime();
-    /* console.log(date);
-    console.log(finishTime);
-    console.log(new Date(finishTime)); */
     let now = new Date().getTime();
-    /* console.log(now);
-    console.log(new Date(now)); */
-    time.value = Math.floor((finishTime - now) / 1000);
+    time.value = Math.round((finishTime - now) / 1000);
   }
 
   /**
@@ -319,6 +338,7 @@ export const useGamesStore = defineStore("games", () => {
    * @param {string} answer The answer
    */
   async function sendAnswer(answer: string) {
+    loading.value = true;
     useCustomHeaders(true);
     const formData = new FormData();
     formData.append("answer", answer);
@@ -330,6 +350,7 @@ export const useGamesStore = defineStore("games", () => {
       formData,
       headers
     );
+    loading.value = false;
     if (status < 200 || status > 299) {
       return toast.add({
         severity: "error",

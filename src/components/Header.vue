@@ -142,6 +142,7 @@ function handleSubmitForm() {
             type="submit"
             label="Tham gia"
             fluid
+            :disabled="loading || !code"
             :loading="loading"
           ></Button>
           <Divider><b>OR</b></Divider>
