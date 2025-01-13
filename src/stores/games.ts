@@ -35,6 +35,7 @@ export const useGamesStore = defineStore("games", () => {
   const score = ref<number>(0);
   const time = ref<number>(0);
   const answered = ref<number>(0);
+  let channel: any;
 
   /**
    * This function handle open room
@@ -171,12 +172,15 @@ export const useGamesStore = defineStore("games", () => {
   function joinRoom() {
     const room = localStorage.getItem("room");
     if (room) {
-      const channel = getEchoInstance()
+      channel = getEchoInstance()
         .join(room)
         .listen("OpenRoom", (event: any) => openRoom(event))
         .listen("StopRoom", (event: any) => stopRoom(event, room))
         .listen("RemovePlayer", (event: any) => removePlayer(event, room))
         .listen("SendQuiz", (event: any) => handleResponseQuiz(event))
+        .listenForWhisper("answered", (event: any) => {
+          answered.value = event.answered;
+        })
         .here(async (users: any) => await enterRoom(users))
         .joining((user: any) => otherJoinRoom(user))
         .leaving((user: any) => otherLeaveRoom(user))
@@ -266,11 +270,11 @@ export const useGamesStore = defineStore("games", () => {
       quiz.value.question = data.data.question;
       quiz.value.answer = data.data.answer;
       answered.value = data.data.answered;
-      handleTime(data.data.time + ' UTC');
+      handleTime(data.data.time + " UTC");
     }
     if (roomStatus.value === "finished") {
       leaderboard.value = data.data.leaderboard;
-      handleTime(data.data.time + ' UTC');
+      handleTime(data.data.time + " UTC");
     }
   }
 
@@ -300,13 +304,45 @@ export const useGamesStore = defineStore("games", () => {
   // This function handle time
   function handleTime(date: string) {
     let finishTime = new Date(date).getTime();
-    console.log(date);
+    /* console.log(date);
     console.log(finishTime);
-    console.log(new Date(finishTime));
+    console.log(new Date(finishTime)); */
     let now = new Date().getTime();
-    console.log(now);
-    console.log(new Date(now));
+    /* console.log(now);
+    console.log(new Date(now)); */
     time.value = Math.floor((finishTime - now) / 1000);
+  }
+
+  /**
+   * This function perform send answer
+   *
+   * @param {string} answer The answer
+   */
+  async function sendAnswer(answer: string) {
+    useCustomHeaders(true);
+    const formData = new FormData();
+    formData.append("answer", answer);
+    const { data, status } = await usePostOrPatchFetch(
+      "POST",
+      `/api/user/games/answer?code=${
+        localStorage.getItem("room")?.split(".")[1]
+      }`,
+      formData,
+      headers
+    );
+    if (status < 200 || status > 299) {
+      return toast.add({
+        severity: "error",
+        summary: "Lỗi",
+        detail: data.message,
+        life: 3000,
+      });
+    }
+    roomStatus.value = "pending";
+    answered.value++;
+    channel.whisper("answered", {
+      answered: answered.value,
+    });
   }
 
   return {
@@ -324,5 +360,6 @@ export const useGamesStore = defineStore("games", () => {
     time,
     answered,
     startGame,
+    sendAnswer,
   };
 });

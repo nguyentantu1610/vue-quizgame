@@ -3,7 +3,7 @@ import { useGamesStore } from "@/stores/games";
 import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 
-const { joinRoom, destroy, startGame } = useGamesStore();
+const { joinRoom, destroy, startGame, sendAnswer } = useGamesStore();
 const {
   players,
   isListening,
@@ -117,12 +117,12 @@ let countDown = setInterval(() => {
           </p>
           <p class="flex flex-row mb-12">
             <span class="basis-1/2 pl-10">
-              <span class="text-xl font-bold">{{ answered }}</span> 
-              <span class="text-xs"> Trả lời</span>
+              <span class="text-xl font-bold">{{ answered }}</span>
+              <small> Trả lời</small>
             </span>
             <span class="basis-1/2 text-right pr-10">
-              <span class=" text-xl font-bold">{{ time }}</span> 
-              <span class="text-xs"> s</span>
+              <span class="text-xl font-bold">{{ time }}</span>
+              <small> s</small>
             </span>
           </p>
           <div class="flex sm:flex-row flex-col flex-wrap sm:pl-24">
@@ -133,6 +133,7 @@ let countDown = setInterval(() => {
               :label="item"
               :disabled="relation === 'creator'"
               class="basis-5/12 m-2 whitespace-nowrap text-ellipsis overflow-hidden h-14"
+              @click="sendAnswer(item)"
             />
           </div>
         </div>
@@ -158,7 +159,8 @@ let countDown = setInterval(() => {
             </li>
           </ul>
           <p class="text-lg mt-6 text-center" v-if="relation !== 'creator'">
-            Điểm của tôi: <span class="text-lg font-bold ml-2">{{ score }}</span>
+            Điểm của tôi:
+            <span class="text-lg font-bold ml-2">{{ score }}</span>
           </p>
         </div>
       </template>
