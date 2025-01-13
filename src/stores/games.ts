@@ -34,6 +34,8 @@ export const useGamesStore = defineStore("games", () => {
   const leaderboard =
     ref<Array<{ name: string | null; email: string; score: number }>>();
   const score = ref<number>(0);
+  const time = ref<number>(0);
+  const answered = ref<number>(0);
 
   /**
    * This function handle open room
@@ -243,11 +245,16 @@ export const useGamesStore = defineStore("games", () => {
     if (roomStatus.value === "playing") {
       quiz.value.question = data.data.question;
       quiz.value.answer = data.data.answer;
-      localStorage.setItem("time", data.data.time);
+      let finishTime = new Date(data.data.time);
+      let now = new Date();
+      time.value = Math.floor((finishTime.getTime() - now.getTime()) / 1000);
+      answered.value = data.data.answered;
     }
     if (roomStatus.value === "finished") {
       leaderboard.value = data.data.leaderboard;
-      localStorage.setItem("time", data.data.time);
+      let finishTime = new Date(data.data.time);
+      let now = new Date();
+      time.value = Math.floor((finishTime.getTime() - now.getTime()) / 1000);
     }
   }
 
@@ -263,5 +270,7 @@ export const useGamesStore = defineStore("games", () => {
     quiz,
     leaderboard,
     score,
+    time,
+    answered,
   };
 });

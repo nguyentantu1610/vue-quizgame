@@ -15,6 +15,8 @@ const {
   quiz,
   leaderboard,
   score,
+  time,
+  answered,
 } = storeToRefs(useGamesStore());
 // Init data
 const room = localStorage.getItem("room");
@@ -25,7 +27,7 @@ onMounted(() => {
 });
 
 // Get button color
-function getColor(index: numnber) {
+function getColor(index: number) {
   let color: string = "contrast";
   switch (index) {
     case 0:
@@ -46,6 +48,13 @@ function getColor(index: numnber) {
   }
   return color;
 }
+
+let countDown = setInterval(() => {
+  time.value--;
+  if (time.value === 0) {
+    clearInterval(countDown);
+  }
+}, 1000);
 </script>
 
 <template>
@@ -77,32 +86,53 @@ function getColor(index: numnber) {
         </Toolbar>
       </template>
       <template #content>
-        <div
-          class="flex flex-row flex-wrap gap-2"
-          v-if="players && roomStatus === 'waiting'"
-        >
-          <span v-for="(item, index) in players" :key="item.id">
-            <Chip
-              v-if="item.relation !== 'creator'"
-              :label="item.name"
-              :removable="relation === 'creator'"
-              :pt="{
-                removeIcon: {
-                  onclick: async () =>
-                    await destroy(`/api/user/games/remove-player/${item.id}`),
-                },
-              }"
+        <div v-if="players && roomStatus === 'waiting'">
+          <div class="w-full text-center mt-10 mb-6">
+            <Button
+              raised
+              variant="text"
+              severity="secondary"
+              label="Bắt Đầu"
+              :loading="loading"
             />
-          </span>
+          </div>
+          <div class="flex flex-row flex-wrap gap-2">
+            <span v-for="(item, index) in players" :key="item.id">
+              <Chip
+                v-if="item.relation !== 'creator'"
+                :label="item.name"
+                :removable="relation === 'creator'"
+                :pt="{
+                  removeIcon: {
+                    onclick: async () =>
+                      await destroy(`/api/user/games/remove-player/${item.id}`),
+                  },
+                }"
+              />
+            </span>
+          </div>
         </div>
         <div v-if="roomStatus === 'playing'">
-          <p class="text-4xl font-bold text-center m-10">{{ quiz.question }}</p>
+          <p class="text-4xl font-bold text-center mt-10 mb-16">
+            {{ quiz.question }}
+          </p>
+          <p class="flex flex-row mb-12">
+            <span class="basis-1/2 pl-10">
+              <span class="text-xl font-bold">{{ answered }}</span> 
+              <span class="text-xs"> Trả lời</span>
+            </span>
+            <span class="basis-1/2 text-right pr-10">
+              <span class=" text-xl font-bold">{{ time }}</span> 
+              <span class="text-xs"> s</span>
+            </span>
+          </p>
           <div class="flex sm:flex-row flex-col flex-wrap sm:pl-24">
             <Button
               v-for="(item, index) in quiz.answer.split(',')"
               :loading="loading"
               :severity="getColor(index)"
               :label="item"
+              :disabled="relation === 'creator'"
               class="basis-5/12 m-2 whitespace-nowrap text-ellipsis overflow-hidden h-14"
             />
           </div>
